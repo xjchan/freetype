@@ -23,7 +23,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/golang/freetype"
+	"github.com/xjchan/freetype"
 	"golang.org/x/image/font"
 )
 

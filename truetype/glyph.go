@@ -25,7 +25,7 @@ type Point struct {
 // series of glyphs from a Font.
 type GlyphBuf struct {
 	// AdvanceWidth is the glyph's advance width.
-	AdvanceWidth fixed.Int26_6
+	AdvanceWidth, AdvanceHeight fixed.Int26_6
 	// Bounds is the glyph's bounding box.
 	Bounds fixed.Rectangle26_6
 	// Points contains all Points from all contours of the glyph. If hinting
@@ -116,21 +116,25 @@ func (g *GlyphBuf) Load(f *Font, scale fixed.Int26_6, i Index, h font.Hinting) e
 	}
 
 	advanceWidth := g.phantomPoints[1].X - g.phantomPoints[0].X
+	advanceHeight := g.phantomPoints[2].Y - g.phantomPoints[3].Y
+
 	if h != font.HintingNone {
 		if len(f.hdmx) >= 8 {
 			if n := u32(f.hdmx, 4); n > 3+uint32(i) {
 				for hdmx := f.hdmx[8:]; uint32(len(hdmx)) >= n; hdmx = hdmx[n:] {
 					if fixed.Int26_6(hdmx[0]) == scale>>6 {
 						advanceWidth = fixed.Int26_6(hdmx[2+i]) << 6
+						advanceHeight = fixed.Int26_6(hdmx[2+i]) << 6
 						break
 					}
 				}
 			}
 		}
 		advanceWidth = (advanceWidth + 32) &^ 63
+		advanceHeight = (advanceHeight + 32) &^ 63
 	}
 	g.AdvanceWidth = advanceWidth
-
+	g.AdvanceHeight = advanceHeight
 	// Set g.Bounds to the 'control box', which is the bounding box of the
 	// Bézier curves' control points. This is easier to calculate, no smaller
 	// than and often equal to the tightest possible bounding box of the curves

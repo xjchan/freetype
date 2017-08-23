@@ -27,7 +27,7 @@ import (
 	"math"
 	"os"
 
-	"github.com/golang/freetype/raster"
+	"github.com/xjchan/freetype/raster"
 	"golang.org/x/image/math/fixed"
 )
 
